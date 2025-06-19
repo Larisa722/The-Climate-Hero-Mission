@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>關卡 1：碳足跡偵探</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff8e1;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #f57c00;
+    }
+    .question-box {
+      background: #fff3e0;
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 700px;
+      margin: 0 auto 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+    button.option {
+      display: block;
+      margin: 15px auto;
+      padding: 15px 30px;
+      font-size: 16px;
+      background-color: #ffb74d;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button.option:hover {
+      background-color: #ffa726;
+    }
+    .result {
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    .nav-btns {
+      margin-top: 30px;
+      display: none;
+    }
+    .nav-btns a {
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    .nav-btns button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #ef6c00;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .nav-btns button:hover {
+      background-color: #e65100;
+    }
+  </style>
+</head>
+<body>
+  <h1>🕵️‍♂️ 關卡 1：碳足跡偵探</h1>
+
+  <!-- 遊戲說明與開始按鈕 -->
+  <div id="intro" style="max-width:600px; margin: 20px auto; background:#fff3e0; border-radius: 15px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+    <h2>🎮 闖關說明</h2>
+    <p>1. 這是<strong>單選題</strong>的關卡。</p>
+    <p>2. 答對 <strong>五題</strong>即可過關。</p>
+    <p>3. <strong>錯一題</strong>就要從第一題重新挑戰喔！</p>
+    <button onclick="startGame()" style="margin-top: 20px; padding: 12px 25px; font-size: 16px; background-color: #f57c00; color: white; border: none; border-radius: 10px; cursor: pointer;">
+      開始遊戲
+    </button>
+  </div>
+
+  <!-- 題目區 -->
+  <div class="question-box">
+    <p id="question"></p>
+    <div id="options"></div>
+    <div class="result" id="result"></div>
+    <button id="nextBtn" style="display: none; margin-top: 20px;" onclick="nextQuestion()">下一題</button>
+  </div>
+
+  <!-- 導航按鈕 -->
+  <div class="nav-btns" id="navBtns">
+    <a href="index.html"><button>返回地圖</button></a>
+    <a href="level2.html"><button>前往下一關</button></a>
+  </div>
+
+  <!-- 背景音樂元素 -->
+  <audio id="bgm" src="images/Backgroundmusic.mp3" loop></audio>
+
+  <script>
+    const questions = [
+      {
+        q: "下列哪個行為可以減少個人碳足跡？",
+        options: [
+          { text: "A. 每天開車上下學", feedback: "🚗 錯誤，這樣碳排放高。", correct: false },
+          { text: "B. 多搭乘大眾運輸工具", feedback: "✅ 沒錯！大眾運輸能減少每人碳排。", correct: true },
+          { text: "C. 每天吃牛排", feedback: "🥩 錯誤，牛肉碳排高。", correct: false },
+          { text: "D. 使用免洗餐具", feedback: "🍽️ 錯誤，會產生廢棄物。", correct: false }
+        ]
+      },
+      {
+        q: "什麼是碳足跡？",
+        options: [
+          { text: "A. 地球上的腳印", feedback: "🌍 不是喔，請再想想。", correct: false },
+          { text: "B. 人類活動產生的二氧化碳總量", feedback: "✅ 正確！這是碳足跡的定義。", correct: true },
+          { text: "C. 用腳量碳的長度", feedback: "👣 錯了，這只是比喻。", correct: false },
+          { text: "D. 植物吸收的碳量", feedback: "🌱 錯誤，那是碳匯。", correct: false }
+        ]
+      },
+      {
+        q: "下列哪一個活動碳排最低？",
+        options: [
+          { text: "A. 騎腳踏車", feedback: "✅ 太棒了！沒有碳排！", correct: true },
+          { text: "B. 坐飛機", feedback: "✈️ 錯誤，飛機碳排非常高。", correct: false },
+          { text: "C. 開車", feedback: "🚘 錯誤，汽車碳排不少。", correct: false },
+          { text: "D. 騎機車", feedback: "🛵 還是不夠環保。", correct: false }
+        ]
+      },
+      {
+        q: "減少碳足跡的飲食方式是？",
+        options: [
+          { text: "A. 吃大量紅肉", feedback: "🥩 錯了，牛肉碳排最高。", correct: false },
+          { text: "B. 減少動物性食品攝取", feedback: "✅ 正解！多吃植物有助減碳。", correct: true },
+          { text: "C. 每天外食", feedback: "🍱 外食常用免洗餐具與包裝。", correct: false },
+          { text: "D. 飲食不影響碳排", feedback: "❌ 其實飲食影響很大喔。", correct: false }
+        ]
+      },
+      {
+        q: "哪個選項最能幫助減碳？",
+        options: [
+          { text: "A. 每天購物", feedback: "🛍️ 太常消費會增加碳排。", correct: false },
+          { text: "B. 購買在地食材", feedback: "✅ 正確！可減少運輸碳排。", correct: true },
+          { text: "C. 買很多衣服但不穿", feedback: "👗 浪費資源與能源。", correct: false },
+          { text: "D. 使用舊電器", feedback: "⚠️ 舊電器可能耗能高。", correct: false }
+        ]
+      }
+    ];
+
+    let current = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById("question").textContent = `第 ${current + 1} 題：` + q.q;
+      const optionsDiv = document.getElementById("options");
+      const resultDiv = document.getElementById("result");
+      const nextBtn = document.getElementById("nextBtn");
+      optionsDiv.innerHTML = "";
+      resultDiv.textContent = "";
+      nextBtn.style.display = "none";
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.textContent = option.text;
+        btn.className = "option";
+        btn.onclick = () => {
+          resultDiv.textContent = option.feedback;
+          if (option.correct) {
+            nextBtn.style.display = "inline-block";
+          } else {
+            setTimeout(() => {
+              alert("答錯了，請從第一題重新開始！");
+              current = 0;
+              loadQuestion();
+            }, 300);
+          }
+        };
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        document.querySelector(".question-box").innerHTML = `<p>🎉 恭喜你完成了關卡 1，獲得碳足跡偵探徽章！</p>`;
+        document.getElementById("navBtns").style.display = "block";
+        localStorage.setItem('level1Completed', 'true');
+      }
+    }
+
+    function startGame() {
+      document.getElementById("intro").style.display = "none";
+      document.querySelector(".question-box").style.display = "block";
+      document.getElementById("bgm").play();
+      loadQuestion();
+    }
+  </script>
+</body>
+</html>
